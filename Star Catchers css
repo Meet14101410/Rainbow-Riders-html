@@ -1,0 +1,39 @@
+/* Star Catchers Styles */
+body {
+  margin: 0;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: linear-gradient(to bottom, #001f3f, #005f99);
+  color: #fff;
+  text-align: center;
+}
+
+h2 {
+  margin: 10px;
+  color: #ffdc00;
+  text-shadow: 2px 2px 4px #000;
+}
+
+canvas {
+  display: block;
+  margin: 20px auto;
+  background: #001f3f;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #ffdc00;
+  color: #001f3f;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: #ffd700;
+  transform: scale(1.05);
+}
