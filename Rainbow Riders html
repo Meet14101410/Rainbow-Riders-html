@@ -1,0 +1,149 @@
+Nice — here's a **short single-file HTML** for a simple kid-friendly runner called **Rainbow Riders**. Paste into a file `rainbow-riders.html` and open in a browser.
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Rainbow Riders</title>
+<style>
+  html,body{height:100%;margin:0;font-family:sans-serif;background:#87ceeb}
+  canvas{display:block;margin:0 auto;background:linear-gradient(180deg,#ffd6e0,#fffae6,#d6f6ff);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15)}
+  #ui{width:600px;margin:12px auto;text-align:center;color:#333}
+  button{padding:8px 14px;border-radius:8px;border:none;background:#ff7aa2;color:white;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="ui">
+  <h2>Rainbow Riders 🏳️‍🌈</h2>
+  <button id="start">Start</button>
+  <span style="margin-left:12px">Score: <span id="score">0</span></span>
+</div>
+<canvas id="game" width="600" height="360"></canvas>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+let running=false, score=0;
+const player = {x:80,y:H-60,r:20,vy:0,ground:H-40,jumping:false};
+const obstacles = [];
+const stars = [];
+
+function reset(){
+  score=0; document.getElementById('score').textContent = score;
+  obstacles.length=0; stars.length=0;
+  player.y = player.ground; player.vy=0; player.jumping=false;
+}
+
+function spawnObstacle(){
+  const h = 18 + Math.random()*30;
+  obstacles.push({x:W+20,y:player.ground+h-2,w:18,h:h});
+}
+function spawnStar(){
+  stars.push({x:W+40,y:80+Math.random()*160,r:8});
+}
+
+let tick=0;
+function update(dt){
+  if(!running) return;
+  tick++;
+  // spawn
+  if(tick%90===0) spawnObstacle();
+  if(tick%150===0) spawnStar();
+
+  // player physics
+  player.vy += 0.9; player.y += player.vy;
+  if(player.y > player.ground){ player.y = player.ground; player.vy=0; player.jumping=false; }
+
+  // move obstacles & collide
+  for(let i=obstacles.length-1;i>=0;i--){
+    obstacles[i].x -= 3 + Math.min(3,score/50);
+    if(obstacles[i].x + obstacles[i].w < -20) obstacles.splice(i,1);
+    // collision
+    const dx = Math.abs(player.x - (obstacles[i].x + obstacles[i].w/2));
+    const dy = Math.abs(player.y - (obstacles[i].y - obstacles[i].h/2));
+    if(dx < player.r + obstacles[i].w/2 && dy < player.r + obstacles[i].h/2){
+      running=false;
+      document.getElementById('start').textContent = 'Restart';
+    }
+  }
+
+  // stars
+  for(let i=stars.length-1;i>=0;i--){
+    stars[i].x -= 3;
+    // collect
+    const d = Math.hypot(player.x - stars[i].x, player.y - stars[i].y);
+    if(d < player.r + stars[i].r){ score += 5; document.getElementById('score').textContent = score; stars.splice(i,1); continue; }
+    if(stars[i].x < -20) stars.splice(i,1);
+  }
+
+  // score over time
+  if(tick%30===0){ score++; document.getElementById('score').textContent = score; }
+}
+
+function draw(){
+  // sky/background gradient (rainbow stripes)
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#ff9a9e'); g.addColorStop(0.2,'#fad0c4'); g.addColorStop(0.4,'#fbc2eb');
+  g.addColorStop(0.6,'#a6c1ee'); g.addColorStop(0.8,'#cfd9df'); g.addColorStop(1,'#d4fc79');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // ground
+  ctx.fillStyle = '#6ab04c'; ctx.fillRect(0, player.ground + player.r, W, H);
+
+  // stars
+  for(const s of stars){
+    ctx.beginPath(); ctx.moveTo(s.x, s.y- s.r);
+    for(let i=0;i<5;i++){
+      ctx.lineTo(s.x + Math.cos((i*2*Math.PI)/5)*s.r, s.y + Math.sin((i*2*Math.PI)/5)*s.r);
+    }
+    ctx.closePath(); ctx.fillStyle = '#fff176'; ctx.fill();
+  }
+
+  // obstacles (cute blocks)
+  for(const o of obstacles){
+    ctx.fillStyle = '#ff6b6b';
+    ctx.fillRect(o.x, o.y - o.h, o.w, o.h);
+    ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.strokeRect(o.x, o.y - o.h, o.w, o.h);
+  }
+
+  // player (rainbow rider - circle with stripe)
+  const p = player;
+  // shadow
+  ctx.beginPath(); ctx.ellipse(p.x, p.ground + p.r + 8, p.r*1.1, p.r*0.4, 0,0,2*Math.PI); ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fill();
+  // body
+  ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fillStyle = '#ffffff'; ctx.fill();
+  // rainbow stripes
+  const colors = ['#e63946','#f4a261','#ffd166','#06d6a0','#118ab2'];
+  for(let i=0;i<colors.length;i++){
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r - 2 - i*3, Math.PI*0.75, Math.PI*0.25);
+    ctx.lineWidth = 4; ctx.strokeStyle = colors[i]; ctx.stroke();
+  }
+}
+
+function loop(){
+  update(1/60); draw();
+  requestAnimationFrame(loop);
+}
+
+// controls
+document.addEventListener('keydown', e=>{
+  if(e.code === 'Space' || e.code === 'ArrowUp'){ if(!player.jumping){ player.vy = -12; player.jumping=true; } }
+  if(e.key === 'r' || e.key === 'R'){ reset(); running=true; document.getElementById('start').textContent='Playing...'; }
+});
+document.getElementById('start').addEventListener('click', ()=>{
+  if(!running){ reset(); running=true; document.getElementById('start').textContent='Playing...'; }
+});
+
+reset();
+loop();
+</script>
+</body>
+</html>
+```
+
+Want me to also give a **short CSS-only styling variant**, or add a tiny mobile touch control (tap to jump)?
