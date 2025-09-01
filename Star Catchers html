@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Star Catchers</title>
+<style>
+  body { margin:0; font-family:sans-serif; background:#001f3f; color:#fff; text-align:center; }
+  canvas { display:block; margin:20px auto; background:#001f3f; border:2px solid #fff; border-radius:8px; }
+  h2 { margin:10px; }
+  button { padding:8px 14px; border:none; border-radius:6px; background:#ffdc00; color:#001f3f; cursor:pointer; font-weight:bold; }
+</style>
+</head>
+<body>
+<h2>⭐ Star Catchers ⭐</h2>
+<button id="start">Start</button> Score: <span id="score">0</span>
+<canvas id="game" width="500" height="400"></canvas>
+
+<script>
+const c = document.getElementById('game'), ctx = c.getContext('2d');
+let score=0, running=false, tick=0;
+const player={x:220,y:360,w:60,h:20};
+const stars=[];
+
+function reset(){score=0;stars.length=0;player.x=220;document.getElementById('score').textContent=0;}
+
+function spawnStar(){stars.push({x:Math.random()*440,y:0,r:12,vy:2+Math.random()*2});}
+
+function update(){
+  if(!running) return;
+  tick++;
+  if(tick%60===0) spawnStar();
+
+  stars.forEach(s=>s.y+=s.vy);
+
+  for(let i=stars.length-1;i>=0;i--){
+    let s=stars[i];
+    if(s.y+s.r>400){stars.splice(i,1);}
+    if(player.x<s.x+s.r && player.x+player.w>s.x-s.r && player.y<s.y+s.r && player.y+player.h>s.y-s.r){
+      score+=5; document.getElementById('score').textContent=score; stars.splice(i,1);
+    }
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,500,400);
+  // player
+  ctx.fillStyle='#ffdc00'; ctx.fillRect(player.x,player.y,player.w,player.h);
+  // stars
+  stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle='#fff'; ctx.fill();
+  });
+}
+
+function loop(){update();draw();requestAnimationFrame(loop);}
+
+// controls
+document.addEventListener('keydown',e=>{
+  if(e.code==='ArrowLeft'){ player.x -=20; if(player.x<0)player.x=0; }
+  if(e.code==='ArrowRight'){ player.x +=20; if(player.x>440)player.x=440; }
+});
+
+document.getElementById('start').addEventListener('click',()=>{
+  if(!running){ reset(); running=true; document.getElementById('start').textContent='Playing...'; }
+});
+
+reset(); loop();
+</script>
+</body>
+</html>
