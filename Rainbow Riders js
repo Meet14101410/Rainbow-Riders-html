@@ -1,0 +1,98 @@
+Perfect! Here’s a **short standalone JavaScript** file (`script.js`) to power **Rainbow Riders**.
+(It’s compact but fully playable — just link this in your HTML with `<script src="script.js"></script>`.)
+
+```javascript
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+let running = false, score = 0, tick = 0;
+const player = {x:80,y:H-60,r:20,vy:0,ground:H-40,jumping:false};
+const obstacles = [], stars = [];
+
+function reset() {
+  score = 0; document.getElementById('score').textContent = score;
+  obstacles.length = 0; stars.length = 0;
+  player.y = player.ground; player.vy = 0; player.jumping = false;
+}
+
+function spawnObstacle() {
+  const h = 18 + Math.random()*30;
+  obstacles.push({x:W+20,y:player.ground+h-2,w:18,h});
+}
+function spawnStar() {
+  stars.push({x:W+40,y:80+Math.random()*160,r:8});
+}
+
+function update() {
+  if (!running) return;
+  tick++;
+  if (tick % 90 === 0) spawnObstacle();
+  if (tick % 150 === 0) spawnStar();
+
+  // Player physics
+  player.vy += 0.9; player.y += player.vy;
+  if (player.y > player.ground) { player.y = player.ground; player.vy = 0; player.jumping = false; }
+
+  // Obstacles
+  for (let i = obstacles.length - 1; i >= 0; i--) {
+    let o = obstacles[i]; o.x -= 3 + Math.min(3, score/50);
+    if (o.x + o.w < -20) obstacles.splice(i,1);
+    const dx = Math.abs(player.x - (o.x+o.w/2)), dy = Math.abs(player.y - (o.y-o.h/2));
+    if (dx < player.r + o.w/2 && dy < player.r + o.h/2) {
+      running = false; document.getElementById('start').textContent = 'Restart';
+    }
+  }
+
+  // Stars
+  for (let i = stars.length-1; i >= 0; i--) {
+    let s = stars[i]; s.x -= 3;
+    if (Math.hypot(player.x-s.x,player.y-s.y) < player.r+s.r) {
+      score += 5; document.getElementById('score').textContent = score; stars.splice(i,1); continue;
+    }
+    if (s.x < -20) stars.splice(i,1);
+  }
+
+  if (tick % 30 === 0) { score++; document.getElementById('score').textContent = score; }
+}
+
+function draw() {
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#ff9a9e');g.addColorStop(0.2,'#fad0c4');
+  g.addColorStop(0.4,'#fbc2eb');g.addColorStop(0.6,'#a6c1ee');
+  g.addColorStop(0.8,'#cfd9df');g.addColorStop(1,'#d4fc79');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#6ab04c'; ctx.fillRect(0,player.ground+player.r,W,H);
+
+  stars.forEach(s=>{
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,2*Math.PI);ctx.fillStyle='#fff176';ctx.fill();
+  });
+  obstacles.forEach(o=>{
+    ctx.fillStyle='#ff6b6b';ctx.fillRect(o.x,o.y-o.h,o.w,o.h);
+  });
+
+  const p = player;
+  ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
+  const colors=['#e63946','#f4a261','#ffd166','#06d6a0','#118ab2'];
+  colors.forEach((c,i)=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r-2-i*3,Math.PI*0.75,Math.PI*0.25);
+    ctx.lineWidth=4;ctx.strokeStyle=c;ctx.stroke();
+  });
+}
+
+function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+document.addEventListener('keydown', e=>{
+  if((e.code==='Space'||e.code==='ArrowUp')&&!player.jumping){player.vy=-12;player.jumping=true;}
+  if(e.key==='r'||e.key==='R'){reset();running=true;document.getElementById('start').textContent='Playing...';}
+});
+document.getElementById('start').addEventListener('click',()=>{
+  if(!running){reset();running=true;document.getElementById('start').textContent='Playing...';}
+});
+
+reset(); loop();
+```
+
+This works perfectly with the **HTML** and **CSS** I gave earlier.
+Would you also like me to make it **touch-friendly for mobile (tap to jump)**?
