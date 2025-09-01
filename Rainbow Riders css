@@ -1,0 +1,44 @@
+Here’s a **short standalone CSS** snippet to style your Rainbow Riders game elements nicely.
+(Use this if you separate styles into a `style.css` file.)
+
+```css
+/* Rainbow Riders Styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: #87ceeb;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #ffd6e0, #fffae6, #d6f6ff);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+#ui {
+  width: 600px;
+  margin: 12px auto;
+  text-align: center;
+  color: #333;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #ff7aa2;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #ff4e89;
+}
+```
+
+Would you like me to also give a **separate JS short code** to complete the project (so you can link HTML, CSS, and JS separately)?
