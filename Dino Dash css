@@ -1,0 +1,41 @@
+Here’s a **short standalone CSS** snippet for **Dino Dash** (put it in a `style.css` and link it in the HTML):
+
+```css
+/* Dino Dash Styles */
+body {
+  margin: 0;
+  background: #e0f7fa;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  text-align: center;
+}
+
+h2 {
+  margin: 10px;
+  color: #333;
+}
+
+canvas {
+  background: #fff;
+  display: block;
+  margin: 20px auto;
+  border: 2px solid #333;
+  border-radius: 8px;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #ff7043;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #f4511e;
+}
+```
+
+Would you also like me to give a **Dino Dash JS file** separately (so it’s fully modular)?
