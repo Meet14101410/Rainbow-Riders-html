@@ -1,0 +1,66 @@
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+let score = 0, running = false, tick = 0;
+const dino = {x:50, y:250, w:30, h:30, vy:0, onGround:true};
+const obstacles = [];
+
+function reset() {
+  score = 0;
+  obstacles.length = 0;
+  dino.y = 250;
+  dino.vy = 0;
+  dino.onGround = true;
+  document.getElementById('score').textContent = 0;
+}
+
+function spawnObstacle() {
+  obstacles.push({x:600, y:260, w:20, h:40});
+}
+
+function update() {
+  if (!running) return;
+  tick++;
+
+  if (tick % 90 === 0) spawnObstacle();
+
+  // Dino gravity
+  dino.vy += 0.8;
+  dino.y += dino.vy;
+  if (dino.y > 250) { dino.y = 250; dino.vy = 0; dino.onGround = true; }
+
+  // Move obstacles
+  obstacles.forEach(o => o.x -= 5);
+
+  // Collision check
+  for (let i = obstacles.length-1; i >= 0; i--) {
+    let o = obstacles[i];
+    if (o.x + o.w < 0) obstacles.splice(i,1);
+    if (dino.x < o.x + o.w && dino.x + dino.w > o.x && dino.y + dino.h > o.y) {
+      running = false;
+      document.getElementById('start').textContent = 'Restart';
+    }
+  }
+
+  if (tick % 30 === 0) { score++; document.getElementById('score').textContent = score; }
+}
+
+function draw() {
+  ctx.clearRect(0,0,600,300);
+  ctx.fillStyle = '#8bc34a'; ctx.fillRect(0,280,600,20); // ground
+  ctx.fillStyle = '#795548'; ctx.fillRect(dino.x,dino.y,dino.w,dino.h); // dino
+  obstacles.forEach(o => { ctx.fillStyle = '#f44336'; ctx.fillRect(o.x,o.y,o.w,o.h); });
+}
+
+function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+// Controls
+document.addEventListener('keydown', e => {
+  if ((e.code==='Space'||e.code==='ArrowUp') && dino.onGround) { dino.vy = -12; dino.onGround=false; }
+});
+
+document.getElementById('start').addEventListener('click', () => {
+  if (!running) { reset(); running = true; document.getElementById('start').textContent='Playing...'; }
+});
+
+reset(); loop();
