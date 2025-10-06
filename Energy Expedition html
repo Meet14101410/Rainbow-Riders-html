@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Energy Expedition</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#00d4ff;--glass:rgba(255,255,255,0.06)}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{margin:0;background:linear-gradient(180deg,#071028 0%,var(--bg) 100%);color:#e6f2ff;display:flex;align-items:center;justify-content:center;height:100vh}
+    .wrap{width:960px;max-width:95%;background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);padding:20px;border-radius:14px;box-shadow:0 10px 30px rgba(2,8,23,0.7);display:grid;grid-template-columns:1fr 320px;gap:18px}
+    header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:20px;letter-spacing:0.6px
