@@ -1,0 +1,58 @@
+/* Motion Masters — very short CSS (for the HTML you used earlier) */
+
+:root{
+  --bg:#f7f8fa; --card:#fff; --accent:#2563eb; --muted:#6b7280;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  align-items:center;
+  justify-content:flex-start;
+  padding:24px;
+  font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:linear-gradient(180deg,var(--bg),#ffffff);
+  color:#111827;
+}
+
+h1{
+  margin:0;
+  font-size:1.5rem;
+  letter-spacing:0.2px;
+}
+
+#game{
+  width:100%;
+  max-width:900px;
+  height:auto;           /* canvas intrinsic height kept in HTML; this makes it scale */
+  aspect-ratio: 600 / 360;
+  border-radius:10px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 6px 20px rgba(16,24,40,0.06);
+  background:linear-gradient(180deg,#ffffff,#f4f6fb);
+  display:block;
+}
+
+button#start{
+  appearance:none;
+  border:0;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--accent),#1e40af);
+  color:white;
+  box-shadow:0 6px 18px rgba(37,99,235,0.18);
+}
+
+/* small screens */
+@media (max-width:420px){
+  body{padding:16px}
+  h1{font-size:1.2rem}
+  button#start{width:100%}
+}
