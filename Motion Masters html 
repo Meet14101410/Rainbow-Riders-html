@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Motion Masters</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    /* very short inline styling */
+    body{font-family:system-ui,Arial;margin:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+    canvas{border:1px solid #ccc}
+    button{padding:8px 12px;border-radius:6px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <h1>Motion Masters</h1>
+  <canvas id="game" width="600" height="360" aria-label="Motion Masters game"></canvas>
+  <button id="start">Start</button>
+
+  <script>
+    // tiny demo: simple falling box to show motion
+    const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+    let y=20, vy=0, running=false;
+    function loop(){
+      if(!running) return;
+      vy += 0.6; // gravity
+      y += vy;
+      if(y > cvs.height-40){ y = cvs.height-40; vy *= -0.4 } // bounce
+      ctx.clearRect(0,0,cvs.width,cvs.height);
+      ctx.fillRect(280, y, 40, 40);
+      requestAnimationFrame(loop);
+    }
+    document.getElementById('start').onclick = () => {
+      if(!running){ running=true; y=20; vy=0; loop(); }
+    };
+  </script>
+</body>
+</html>
