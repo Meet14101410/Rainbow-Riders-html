@@ -1,0 +1,13 @@
+/* Force Frontier — short CSS */
+:root{--bg1:#eef;--bg2:#ddf;--accent:#c33;--panel:#fff}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font-family:system-ui,Arial,sans-serif;margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px;background:linear-gradient(180deg,var(--bg1),var(--bg2))}
+#arena{width:560px;height:200px;border:2px solid #222;position:relative;overflow:hidden;background:radial-gradient(circle at 20% 10%,rgba(255,255,255,0.6),transparent),linear-gradient(var(--bg1),var(--bg2));box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+#ship{width:36px;height:18px;background:var(--accent);position:absolute;left:20px;top:91px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:600}
+#ship::after{content:'';position:absolute;right:-10px;top:4px;width:16px;height:4px;border-radius:4px;filter:blur(6px);opacity:0.7;background:linear-gradient(90deg,rgba(255,200,200,0.9),rgba(255,120,120,0.2))}
+.controls{display:flex;gap:8px;align-items:center}
+button{padding:8px 12px;border-radius:8px;border:0;background:#222;color:#fff;font-weight:600;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,0.12)}
+button:active{transform:translateY(1px)}
+small{color:#333;opacity:0.9}
+@media (max-width:600px){#arena{width:320px;height:140px}#ship{width:28px;height:14px}}
