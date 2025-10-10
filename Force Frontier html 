@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Force Frontier (Demo)</title>
+  <style>
+    body{font-family:system-ui,Arial;margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px}
+    #arena{width:560px;height:200px;border:2px solid #222;position:relative;overflow:hidden;background:linear-gradient(#eef,#ddf)}
+    #ship{width:36px;height:18px;background:#c33;position:absolute;left:20px;top:91px;border-radius:4px}
+    button{padding:8px 12px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h2>Force Frontier — tiny demo</h2>
+  <div id="arena">
+    <div id="ship"></div>
+  </div>
+  <div>
+    <button id="thrust">Apply Force</button>
+    <button id="reset">Reset</button>
+    <small>Click <b>Apply Force</b> or use Space to add velocity.</small>
+  </div>
+
+  <script>
+    const ship = document.getElementById('ship');
+    let x=20, vx=0; const dt=1/60, friction=0.99;
+    function step(){
+      vx *= friction;
+      x += vx;
+      if(x < 0){ x=0; vx*=-0.6 }
+      if(x > 524){ x=524; vx*=-0.6 }
+      ship.style.left = x + 'px';
+      requestAnimationFrame(step);
+    }
+    document.getElementById('thrust').onclick = ()=>{ vx += 6 }; 
+    document.getElementById('reset').onclick = ()=>{ x=20; vx=0 };
+    window.addEventListener('keydown', e=>{ if(e.code==='Space') vx+=6 });
+    step();
+  </script>
+</body>
+</html>
