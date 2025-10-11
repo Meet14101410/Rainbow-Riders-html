@@ -1,0 +1,14 @@
+body{display:flex;min-height:100vh;align-items:center;justify-content:center;background:#f5f7fb;font-family:Inter,Arial,sans-serif;margin:0}
+.card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 6px 24px rgba(20,30,60,0.08);width:320px}
+h1{font-size:18px;margin:0 0 12px}
+.question{min-height:56px;margin-bottom:12px;font-weight:600}
+.choices button{display:block;width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #e6e9ef;background:#fafbff;cursor:pointer;transition:.2s}
+.choices button:hover{background:#eef3ff}
+.choices button.correct{border-color:#2d9b66;background:#eaffef}
+.choices button.wrong{border-color:#e14b4b;background:#ffecec}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.muted{font-size:12px;color:#68758a}
+.btn{padding:8px 12px;border-radius:8px;border:0;background:#2563eb;color:#fff;cursor:pointer;transition:.2s}
+.btn:hover{background:#174bd4}
+.btn.secondary{background:#e6eefc;color:#084298}
+.btn.secondary:hover{background:#cdddfb}
