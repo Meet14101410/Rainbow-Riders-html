@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Velocity Voyage</title>
+<style>
+  :root{--bg:#0b1220;--card:#0f1724;--accent:#64d2ff;--muted:#9aa7b2}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; margin:0; background:linear-gradient(180deg,#071021 0%,#071827 100%); color:#e6f0f6; display:flex; min-height:100vh; align-items:center; justify-content:center;}
+  .card{width:min(720px,95%); background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01)); padding:20px; border-radius:12px; box-shadow:0 8px 30px rgba(2,6,23,0.6);}
+  h1{margin:0 0 10px; font-size:20px; letter-spacing:0.4px;}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+  label{font-size:13px; color:var(--muted);}
+  input[type=number]{width:120px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06); background:transparent;color:inherit; outline:none}
+  button{padding:9px 14px;border-radius:10px;border:none;background:var(--accent); color:#042233; font-weight:600; cursor:pointer}
+  .track{height:120px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:10px; position:relative; overflow:hidden; display:flex; align-items:center}
+  .ship{width:36px;height:18px;border-radius:8px;background:linear-gradient(90deg,#fff,#cfefff); position:absolute; left:12px; transform:translateX(0); display:flex; align-items:center; justify-content:center; font-size:10px; color:#042233; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+  .info{margin-top:12px; font-size:14px; color:var(--muted)}
+  .reset{background:transparent;border:1px solid rgba(255,255,255,0.06); color:var(--muted); padding:8px 12px;border-radius:10px; cursor:pointer}
+  @media (max-width:480px){ .controls{flex-direction:column; align-items:stretch} input[type=number]{width:100%} }
+</style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Velocity Voyage</h1>
+    <div class="controls" aria-hidden="false">
+      <label>Distance (m)
+        <input id="distance" type="number" min="0" step="0.1" value="50" />
+      </label>
+      <label>Time (s)
+        <input id="time" type="number" min="0.01" step="0.1" value="5" />
+      </label>
+      <button id="launch">Launch</button>
+      <button id="reset" class="reset">Reset</button>
+    </div>
+
+    <div class="track" id="track" aria-live="polite">
+      <div class="ship" id="ship">🚀</div>
+    </div>
+
+    <div class="info" id="info">Enter distance and time, then click <strong>Launch</strong>. Velocity = distance ÷ time (m/s).</div>
+  </main>
+
+<script>
+  const distanceInput = document.getElementById('distance');
+  const timeInput = document.getElementById('time');
+  const launchBtn = document.getElementById('launch');
+  const resetBtn = document.getElementById('reset');
+  const ship = document.getElementById('ship');
+  const track = document.getElementById('track');
+  const info = document.getElementById('info');
+  let anim;
+
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  function launch() {
+    cancelAnimationFrame(anim);
+    const d = parseFloat(distanceInput.value);
+    const t = parseFloat(timeInput.value);
+    if (!isFinite(d) || !isFinite(t) || t <= 0) {
+      info.textContent = 'Please enter valid positive numbers for distance and time.';
+      return;
+    }
+    const velocity = d / t; // m/s
+    // map velocity to animation duration & distance on screen
+    // faster velocity -> shorter animation duration
+    const minDur = 0.8, maxDur = 8; // seconds
+    // choose duration inversely with velocity, but clamp
+    const duration = clamp(3 / Math.log10(velocity + 10), minDur, maxDur);
+
+    const trackWidth = track.clientWidth;
+    const startX = 12;
+    const endX = trackWidth - ship.offsetWidth - 12;
+    const travel = endX - startX;
+
+    ship.style.transition = 'none';
+    ship.style.transform = `translateX(${startX}px)`;
+
+    // small timeout to ensure transition reset
+    requestAnimationFrame(() => {
+      ship.style.transition = `transform ${duration}s cubic-bezier(.2,.9,.2,1)`;
+      ship.style.transform = `translateX(${endX}px)`;
+    });
+
+    const vRounded = Math.round(velocity * 100) / 100;
+    info.innerHTML = `Velocity: <strong>${vRounded} m/s</strong> — animation ${duration.toFixed(2)}s. Distance on track: ${Math.round(travel)}px.`;
+
+    // play simple "arrival" behavior
+    clearTimeout(ship.arrival);
+    ship.arrival = setTimeout(() => {
+      ship.style.transition = 'transform 0.6s ease';
+      ship.style.transform = `translateX(${endX - 8}px) scale(1.05)`;
+      setTimeout(() => ship.style.transform = `translateX(${endX}px)`, 300);
+    }, duration * 1000 + 50);
+  }
+
+  function reset() {
+    cancelAnimationFrame(anim);
+    clearTimeout(ship.arrival);
+    ship.style.transition = 'transform 0.4s ease';
+    ship.style.transform = 'translateX(12px)';
+    info.textContent = 'Reset. Enter distance and time, then click Launch.';
+  }
+
+  launchBtn.addEventListener('click', launch);
+  resetBtn.addEventListener('click', reset);
+
+  // allow Enter key on inputs to launch
+  [distanceInput, timeInput].forEach(inp =>
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') launch(); })
+  );
+
+  // responsive reposition on resize
+  window.addEventListener('resize', () => {
+    // keep ship at start if near start
+    const style = getComputedStyle(ship);
+    if (style.transform === 'none' || style.transform.includes('translateX(12px)')) {
+      ship.style.transform = 'translateX(12px)';
+    }
+  });
+</script>
+</body>
+</html>
